@@ -32,4 +32,4 @@ Thumbs.db
 
 # Project specific
 .browser-state/
-*.log
+*.log.browser-state/
