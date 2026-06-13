@@ -17,6 +17,7 @@ description: "社媒内容锻造 skill：从互联网（X/Twitter、网页、小
 |------|--------------|----------|
 | 小红书 | [`references/xhs_viral_playbook.md`](references/xhs_viral_playbook.md) | 标题 5 大公式 / 正文 4 框架 / CES 互动 / 标签金字塔 / 发布时间 / 封面三色法则 |
 | 微信公众号 | [`references/wechat_viral_playbook.md`](references/wechat_viral_playbook.md) | 标题 6 大公式 / 开头 12 种技巧 / 正文 4 框架 / 结尾互动 / 发布时间 / 格式硬指标 |
+| 去 AI 味 | [`references/de_ai_playbook.md`](references/de_ai_playbook.md) | AI 文字特征检测 / 去过渡词 / 破句式 / 加个人痕迹 / 添细节 |
 
 ### 小红书爆款速查
 
@@ -171,6 +172,7 @@ web_crawler.py extract "https://example.com/article" --format markdown -o articl
 
 - [小红书爆款方法论](references/xhs_viral_playbook.md)
 - [微信公众号爆款方法论](references/wechat_viral_playbook.md)
+- [去 AI 味写作指南](references/de_ai_playbook.md)
 - [网站选择器](references/site_selectors.md)
 - [反检测策略](references/anti_detection.md)
 - [输出格式](references/output_formats.md)
