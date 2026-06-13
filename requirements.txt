@@ -1,0 +1,14 @@
+# Social Content Forge - Python Dependencies
+# Install with: pip install -r requirements.txt
+
+# Core scraping
+playwright>=1.40.0
+playwright-stealth>=1.0.6
+
+# HTML parsing & cleaning
+html2text>=2024.1.17
+readability-lxml>=0.8.1
+lxml-html-clean>=0.1.1
+
+# Optional: for faster HTML parsing
+lxml>=5.1.0

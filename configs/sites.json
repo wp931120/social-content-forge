@@ -1,0 +1,36 @@
+{
+  "sites": [
+    {
+      "id": "x",
+      "name": "X/Twitter",
+      "domain": "x.com",
+      "alt_domains": ["twitter.com", "www.x.com", "www.twitter.com"],
+      "url": "https://x.com",
+      "state_file": "x.json",
+      "login_url": "https://x.com",
+      "extractors": ["x_twitter"]
+    },
+    {
+      "id": "xiaohongshu",
+      "name": "小红书",
+      "domain": "xiaohongshu.com",
+      "alt_domains": ["www.xiaohongshu.com"],
+      "url": "https://www.xiaohongshu.com",
+      "state_file": "xiaohongshu.json",
+      "login_url": "https://www.xiaohongshu.com",
+      "extractors": ["xiaohongshu"]
+    }
+  ],
+  "default_state_dir": ".browser-state",
+  "python_path": "/mnt/d/wsl/miniconda3/bin/python",
+  "default_viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "user_agents": [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/115.0",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15"
+  ]
+}
