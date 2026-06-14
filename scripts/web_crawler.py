@@ -42,8 +42,17 @@ from converters.html_to_markdown import convert as html_to_markdown
 from converters.html_to_json import convert as html_to_json
 
 
-# Windows Chrome path for WSL2 — preferred to avoid bot detection
-WIN_CHROME_PATH = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+# Chrome path — preferred to avoid bot detection.
+# Auto-detect by platform; override via env CHROME_PATH if needed.
+import platform as _platform
+_default_chrome_paths = {
+    "Darwin": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "Linux": "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe",
+    "Windows": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+}
+CHROME_EXECUTABLE = os.environ.get("CHROME_PATH") or _default_chrome_paths.get(
+    _platform.system(), "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+)
 
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -191,24 +200,24 @@ def cmd_daemon(state_dir: str = ".browser-state", port: int = DEFAULT_DAEMON_POR
     profile_dir.mkdir(parents=True, exist_ok=True)
     daemon_file = daemon_file_path(state_dir)
 
-    if not Path(WIN_CHROME_PATH).exists():
-        print(f"ERROR: Chrome not found at {WIN_CHROME_PATH}")
-        print("HINT: install Chrome on Windows or edit WIN_CHROME_PATH in web_crawler.py")
+    if not Path(CHROME_EXECUTABLE).exists():
+        print(f"ERROR: Chrome not found at {CHROME_EXECUTABLE}")
+        print("HINT: install Chrome or set CHROME_PATH env var")
         return 3
 
     # Convert WSL path -> Windows path so Chrome.exe accepts the user-data-dir.
     # Without this, Chrome silently joins an existing user instance and exits.
     try:
-        win_profile_dir = subprocess.check_output(
+        user_data_dir = subprocess.check_output(
             ["wslpath", "-w", str(profile_dir)], text=True
         ).strip()
     except Exception:
-        win_profile_dir = str(profile_dir)
+        user_data_dir = str(profile_dir)
 
     chrome_cmd = [
-        WIN_CHROME_PATH,
+        CHROME_EXECUTABLE,
         f"--remote-debugging-port={port}",
-        f"--user-data-dir={win_profile_dir}",
+        f"--user-data-dir={user_data_dir}",
         "--disable-blink-features=AutomationControlled",
         "--disable-dev-shm-usage",
         "--no-first-run",
@@ -336,8 +345,8 @@ def create_browser_context(playwright, headless: bool = True, state_path: str = 
             "--disable-dev-shm-usage",
         ],
     }
-    if Path(WIN_CHROME_PATH).exists():
-        launch_opts["executable_path"] = WIN_CHROME_PATH
+    if Path(CHROME_EXECUTABLE).exists():
+        launch_opts["executable_path"] = CHROME_EXECUTABLE
 
     browser = playwright.chromium.launch(**launch_opts)
 
@@ -408,8 +417,8 @@ def cmd_login(site: str, state_dir: str = ".browser-state", timeout: int = 300):
                 "--disable-dev-shm-usage",
             ],
         }
-        if Path(WIN_CHROME_PATH).exists():
-            launch_opts["executable_path"] = WIN_CHROME_PATH
+        if Path(CHROME_EXECUTABLE).exists():
+            launch_opts["executable_path"] = CHROME_EXECUTABLE
         browser = p.chromium.launch(**launch_opts)
         context = browser.new_context(
             viewport={"width": 1920, "height": 1080},
