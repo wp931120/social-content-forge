@@ -50,7 +50,7 @@ _default_chrome_paths = {
     "Linux": "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe",
     "Windows": "C:/Program Files/Google/Chrome/Application/chrome.exe",
 }
-CHROME_EXECUTABLE = os.environ.get("CHROME_PATH") or _default_chrome_paths.get(
+WIN_CHROME_PATH = os.environ.get("CHROME_PATH") or _default_chrome_paths.get(
     _platform.system(), "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
 )
 
@@ -139,7 +139,17 @@ def connect_daemon(playwright, state_dir: str):
     info = read_daemon_info(state_dir)
     port = info.get("port", DEFAULT_DAEMON_PORT)
     try:
-        browser = playwright.chromium.connect_over_cdp(f"http://localhost:{port}")
+        # Resolve websocket URL ourselves to avoid Playwright's trailing-slash
+        # quirk on some Chrome versions where /json/version/ returns 400.
+        try:
+            with urllib.request.urlopen(
+                f"http://localhost:{port}/json/version", timeout=3
+            ) as resp:
+                ws_url = json.loads(resp.read()).get("webSocketDebuggerUrl")
+        except Exception:
+            ws_url = None
+        endpoint = ws_url or f"http://localhost:{port}"
+        browser = playwright.chromium.connect_over_cdp(endpoint)
         if browser.contexts:
             return browser, browser.contexts[0]
         return browser, browser.new_context(viewport={"width": 1920, "height": 1080})
@@ -200,24 +210,24 @@ def cmd_daemon(state_dir: str = ".browser-state", port: int = DEFAULT_DAEMON_POR
     profile_dir.mkdir(parents=True, exist_ok=True)
     daemon_file = daemon_file_path(state_dir)
 
-    if not Path(CHROME_EXECUTABLE).exists():
-        print(f"ERROR: Chrome not found at {CHROME_EXECUTABLE}")
-        print("HINT: install Chrome or set CHROME_PATH env var")
+    if not Path(WIN_CHROME_PATH).exists():
+        print(f"ERROR: Chrome not found at {WIN_CHROME_PATH}")
+        print("HINT: install Chrome on Windows or edit WIN_CHROME_PATH in web_crawler.py")
         return 3
 
     # Convert WSL path -> Windows path so Chrome.exe accepts the user-data-dir.
     # Without this, Chrome silently joins an existing user instance and exits.
     try:
-        user_data_dir = subprocess.check_output(
+        win_profile_dir = subprocess.check_output(
             ["wslpath", "-w", str(profile_dir)], text=True
         ).strip()
     except Exception:
-        user_data_dir = str(profile_dir)
+        win_profile_dir = str(profile_dir)
 
     chrome_cmd = [
-        CHROME_EXECUTABLE,
+        WIN_CHROME_PATH,
         f"--remote-debugging-port={port}",
-        f"--user-data-dir={user_data_dir}",
+        f"--user-data-dir={win_profile_dir}",
         "--disable-blink-features=AutomationControlled",
         "--disable-dev-shm-usage",
         "--no-first-run",
@@ -345,8 +355,8 @@ def create_browser_context(playwright, headless: bool = True, state_path: str = 
             "--disable-dev-shm-usage",
         ],
     }
-    if Path(CHROME_EXECUTABLE).exists():
-        launch_opts["executable_path"] = CHROME_EXECUTABLE
+    if Path(WIN_CHROME_PATH).exists():
+        launch_opts["executable_path"] = WIN_CHROME_PATH
 
     browser = playwright.chromium.launch(**launch_opts)
 
@@ -417,8 +427,8 @@ def cmd_login(site: str, state_dir: str = ".browser-state", timeout: int = 300):
                 "--disable-dev-shm-usage",
             ],
         }
-        if Path(CHROME_EXECUTABLE).exists():
-            launch_opts["executable_path"] = CHROME_EXECUTABLE
+        if Path(WIN_CHROME_PATH).exists():
+            launch_opts["executable_path"] = WIN_CHROME_PATH
         browser = p.chromium.launch(**launch_opts)
         context = browser.new_context(
             viewport={"width": 1920, "height": 1080},
