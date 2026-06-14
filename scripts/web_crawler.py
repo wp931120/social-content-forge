@@ -750,8 +750,14 @@ def cmd_mine_following(tab: str = "foryou", since: str = None, until: str = None
 
 
 def cmd_detail(target: str, max_replies: int = 30, fmt: str = "markdown",
-               output: str = None, state_dir: str = ".browser-state"):
-    """Open one tweet and capture its main content + thread + replies."""
+               output: str = None, state_dir: str = ".browser-state",
+               download_media: bool = True, assets_dir: str | None = None):
+    """Open one tweet and capture its main content + thread + replies.
+
+    When `download_media=True` (default), images/videos referenced by the
+    main tweet (and thread) are downloaded into `assets_dir` (or, when
+    `output` is given, `<output_parent>/assets/<tweet_id>/`).
+    """
     import x_mine
 
     try:
@@ -763,6 +769,30 @@ def cmd_detail(target: str, max_replies: int = 30, fmt: str = "markdown",
 
             print(f"Opening detail for: {target}")
             d = x_mine.fetch_detail(context, target, max_replies=max_replies)
+
+            # Best-effort media download (main + thread). Replies skipped
+            # to keep the asset folder small; pass download_media=False to
+            # disable entirely.
+            if download_media and "main" in d:
+                main = d["main"]
+                tid = main.get("id") or "tweet"
+                if assets_dir:
+                    a_dir = Path(assets_dir).resolve()
+                else:
+                    base = Path(output).parent if output else Path("workspace")
+                    a_dir = base / "assets" / tid
+                a_dir.mkdir(parents=True, exist_ok=True)
+                if main.get("media"):
+                    main["media"] = x_mine.download_media(
+                        main["media"], a_dir, prefix=tid
+                    )
+                    saved = sum(1 for m in main["media"] if m.get("local_path"))
+                    print(f"Downloaded {saved}/{len(main['media'])} media to {a_dir}")
+                for ti, t in enumerate(d.get("thread", []), 1):
+                    if t.get("media"):
+                        t["media"] = x_mine.download_media(
+                            t["media"], a_dir, prefix=f"{tid}-thread{ti}"
+                        )
 
             if fmt == "json":
                 result = json.dumps(d, ensure_ascii=False, indent=2)
@@ -1049,6 +1079,11 @@ Typical workflow:
     dt.add_argument("--format", choices=["markdown", "json"], default="markdown")
     dt.add_argument("--output", "-o")
     dt.add_argument("--state-dir", default=".browser-state")
+    dt.add_argument("--no-download-media", dest="download_media",
+                    action="store_false", default=True,
+                    help="Skip downloading images/videos referenced by the tweet")
+    dt.add_argument("--assets-dir", default=None,
+                    help="Where to save downloaded media (default: <output_parent>/assets/<tweet_id>/)")
 
     # xhs: convert content into Xiaohongshu drafts
     xhs_p = sub.add_parser("xhs", help="Convert crawled content into Xiaohongshu drafts")
@@ -1112,7 +1147,9 @@ Typical workflow:
             )
     if args.command == "detail":
         return cmd_detail(args.target, args.max_replies, args.format,
-                          args.output, args.state_dir)
+                          args.output, args.state_dir,
+                          download_media=args.download_media,
+                          assets_dir=args.assets_dir)
     if args.command == "xhs":
         return cmd_xhs(args.xhs_cmd, args, args.state_dir)
     parser.print_help()
