@@ -82,6 +82,24 @@ def _tweet_text_robust(tweet_el) -> str:
     """
     _expand_show_more(tweet_el)
 
+    # 0) X "Articles" long-form posts use a separate rich-text container
+    # (twitterArticleRichTextView / twitterArticleReadView /
+    # longformRichTextComponent) and do NOT expose `tweetText`. Check this
+    # first so multi-thousand-char essays are captured intact.
+    for sel in (
+        '[data-testid="twitterArticleRichTextView"]',
+        '[data-testid="longformRichTextComponent"]',
+        '[data-testid="twitterArticleReadView"]',
+    ):
+        art = tweet_el.query_selector(sel)
+        if art:
+            # Article posts often have a separate title element.
+            title_el = tweet_el.query_selector('[data-testid="twitter-article-title"]')
+            title = (title_el.inner_text() or "").strip() if title_el else ""
+            body = (art.inner_text() or "").strip()
+            if body:
+                return f"{title}\n\n{body}".strip() if title else body
+
     # 1) Standard selector
     el = tweet_el.query_selector('[data-testid="tweetText"]')
     if el:
