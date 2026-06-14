@@ -35,17 +35,21 @@ skill 根目录/
 
 ## 核心命令
 
+> **本机 Python 环境**：使用 skill 目录下的 venv `.venv/bin/python`（已预装 playwright + chromium）。
+
 ```bash
+cd ~/.agents/skills/social-content-forge
+
 # 启动浏览器（推荐 daemon 模式）
-python scripts/web_crawler.py daemon
+.venv/bin/python scripts/web_crawler.py daemon
 
 # 登录（仅首次）
-python scripts/web_crawler.py login x
+.venv/bin/python scripts/web_crawler.py login x
 
 # 抓取
-python scripts/web_crawler.py scrape <url>
-python scripts/web_crawler.py mine topic "关键词" --since 2026-06-13
-python scripts/web_crawler.py detail <tweet_url>
+.venv/bin/python scripts/web_crawler.py scrape <url>
+.venv/bin/python scripts/web_crawler.py mine topic "关键词" --since 2026-06-13
+.venv/bin/python scripts/web_crawler.py detail <tweet_url>
 ```
 
 ## 工作流
