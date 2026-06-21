@@ -53,7 +53,7 @@ AI 再改。
 
 更土一点，也更准确一点：给 AI Agent 设计工作流水线。
 
-![From Prompting Agents to Loop Engineering](../../assets/2068008743153832264/2068008743153832264-01.jpg)
+![From Prompting Agents to Loop Engineering](https://pbs.twimg.com/media/HLMKCzNXIAEm_8F?format=jpg&name=large)
 
 ## Prompt 没死，只是你不能只会 Prompt 了
 
@@ -101,7 +101,7 @@ Loop 是一套闭环。
 
 它的核心形状永远差不多：设定目标，执行动作，检查结果，把错误反馈回去，再来一轮。
 
-![Loop 的基本形状](../../assets/2068008743153832264/2068008743153832264-02.png)
+![Loop 的基本形状](https://pbs.twimg.com/media/HLMIWhvXcAAeuXO?format=png&name=large)
 
 区别只在于，以前这个循环是你坐在电脑前手动做。
 
@@ -121,7 +121,7 @@ AI 从“聊天对象”，变成了这个系统里的一个执行单元。
 
 原文把它拆成了几种演进，我觉得很有帮助。
 
-![Loop 的几种含义](../../assets/2068008743153832264/2068008743153832264-03.jpg)
+![Loop 的几种含义](https://pbs.twimg.com/media/HLMI15RWgAAJ5bt?format=jpg&name=large)
 
 早一点的 ReAct，是“思考、行动、观察、再思考”。
 
@@ -145,7 +145,7 @@ AutoGPT 时代，大家第一次大规模感受到“自我提示、自我执行
 
 我最喜欢原文这一段，因为它终于把“听起来很酷”的东西拆成了工程部件。
 
-![Loop 的 6 个组成部分](../../assets/2068008743153832264/2068008743153832264-04.png)
+![Loop 的 6 个组成部分](https://pbs.twimg.com/media/HLMJAs9XAAAdDZV?format=png&name=large)
 
 第一个零件，是触发器。
 
@@ -227,7 +227,7 @@ AutoGPT 时代，大家第一次大规模感受到“自我提示、自我执行
 
 它有停止条件：CI 绿了就停；预算用完也停，然后通知人类。
 
-![PR babysitter 示例](../../assets/2068008743153832264/2068008743153832264-05.png)
+![PR babysitter 示例](https://pbs.twimg.com/media/HLMJEUQXkAAWcKG?format=png&name=large)
 
 这东西不酷炫，但非常实用。
 
@@ -265,7 +265,7 @@ CI 健康检查：每 30 分钟拉一次失败构建，把同类错误聚合起�
 
 它的意思是：目标是让 `test/auth` 里的测试通过。你去改，去跑，没过就继续，过了再停。
 
-![Claude Code /goal 示例](../../assets/2068008743153832264/2068008743153832264-06.png)
+![Claude Code /goal 示例](https://pbs.twimg.com/media/HLMJGlsWgAA9OAD?format=png&name=large)
 
 这时候，一个好的 `/goal` 已经不太像普通 Prompt 了。
 
@@ -308,7 +308,7 @@ AI 没有消灭这些问题，只是把这些问题放大了。
 
 同一个模型，一次通过很便宜。反复试 6 次才收敛，那就是 6 倍成本。
 
-![Loop 成本变化](../../assets/2068008743153832264/2068008743153832264-07.jpg)
+![Loop 成本变化](https://pbs.twimg.com/media/HLMJdWrWEAA_PIO?format=jpg&name=large)
 
 更坑的是弱检查器。
 
@@ -352,7 +352,7 @@ CI 修复、部署验证、接口回归、PR 状态检查、依赖升级、批�
 
 至少不适合一开始就丢给 Loop。
 
-![什么时候不该 Loop](../../assets/2068008743153832264/2068008743153832264-08.jpg)
+![什么时候不该 Loop](https://pbs.twimg.com/media/HLMJgKkWEAAohTF?format=jpg&name=large)
 
 ## 程序员的新价值：不是少了，是上移了
 
